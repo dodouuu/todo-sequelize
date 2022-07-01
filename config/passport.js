@@ -21,7 +21,6 @@ module.exports = app => {
   }
   const verifyCallback = async (req, email, password, done) => {
     try {
-      console.log('start findOne email (passport.js')
       // query User email
       const user = await User.findOne({ where: { email } })
       if (user === null) { // account not exist

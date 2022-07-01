@@ -6,15 +6,23 @@ const db = require('../../models')
 const Todo = db.Todo
 
 // go to home page views/index.hbs
-router.get('/', (req, res) => {
-  return Todo.findAll({
-    raw: true,
-    nest: true
-  })
-    .then((todos) => {
-      return res.render('index', { todos })
-    })
-    .catch((error) => { return res.status(422).json(error) })
+router.get('/', async (req, res) => {
+  try {
+    const UserId = req.user.id
+    const todos = await Todo.findAll(
+      {
+        raw: true,
+        nest: true,
+        where: {
+          UserId
+        }
+      }
+    )
+
+    return res.render('index', { todos })
+  } catch (error) {
+    return res.status(422).json(error)
+  }
 })
 
 module.exports = router

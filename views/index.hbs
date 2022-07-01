@@ -1,4 +1,13 @@
-<a href="/todos/new" class="btn btn-primary mb-3">Create</a>
+{{!-- go to new.hbs --}}
+<div class="d-flex justify-content-end my-5">
+  <div class="row" style="width: 70%">
+    <div class="col-6 d-flex justify-content-center">
+      <a class="btn btn-secondary" href="/todos/new" style="width: 70%; font-size: 1.5vw">Create todos</a>
+    </div>
+    <div class="col-6 "></div>
+  </div>
+</div>
+
 <ul class="list-group">
   {{#each todos}}
   <li class="list-group-item">

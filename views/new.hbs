@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-center my-5">
+  <div class="row w-50">
+    <div class="col-3 d-flex align-items-center">
+      <div>*必填欄位</div>
+    </div>
+    <div class="col-9 d-flex justify-content-center">
+      <div class="btn-lg btn btn-outline-secondary text-secondary p-2">請新增你的 todos</div>
+    </div>
+  </div>
+</div>
+
+<form action="/todos" method="POST" novalidate class="needs-validation">
+
+  {{!-- todo name --}}
+  <div class="d-flex justify-content-center my-5">
+    <div class="row w-50">
+
+      <div class="col-3 d-flex align-items-center">
+        <label for="name" class="m-1">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="ms-2">名稱* :</span>
+        </label>
+      </div>
+
+      <div class="col-9">
+        <input id="name" class="form-control" type="text" placeholder="todos name" name="name" required />
+
+        <div class="valid-feedback">
+          <span class="d-flex justify-content-center">Looks good!</span>
+        </div>
+        <div class="invalid-feedback">
+          <span class="d-flex justify-content-center">名稱必填</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {{!-- create btn for POST /records --}}
+  <div class="d-flex justify-content-center mb-5">
+    <div class="w-50 row d-flex flex-row-reverse">
+      <div class="col-9">
+        <button type="submit" class="form-control btn btn-info btn-lg">Create</button>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<script>
+  (function () {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+      .forEach((form) => {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) { // verify fallaciously
+            // prevent form submit
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          // need to add "was-validated" class to <form>
+          // to show valid-feedback string
+          // or invalid-feedback string
+          form.classList.add('was-validated')
+        }, false)
+      })
+  })()
+
+</script>
