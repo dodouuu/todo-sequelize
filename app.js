@@ -1,3 +1,7 @@
+// if NOT production mode => use .env to set environment variables
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const express = require('express')
 const session = require('express-session')
 const { engine } = require('express-handlebars')
@@ -8,7 +12,11 @@ const flash = require('connect-flash')
 // divide the routes into routes document
 const routes = require('./routes')
 const app = express()
-const PORT = 3000
+
+// if operate in Heroku => PORT = process.env.PORT
+// if operate in Local host => PORT = 3000
+const PORT = process.env.PORT
+
 app.engine('hbs', engine({
   defaultLayout: 'main',
   extname: '.hbs' // make .handlebars extname to .hbs

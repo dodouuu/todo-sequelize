@@ -1,5 +1,6 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
+const FacebookStrategy = require('passport-facebook').Strategy
 const bcrypt = require('bcryptjs')
 
 // import User model
@@ -10,7 +11,7 @@ module.exports = app => {
   // initialize Passport middleware
   app.use(passport.initialize())
   app.use(passport.session())
-  console.log('we are in passpor.js')
+
   // set LocalStrategy
   const customFields = {
     // make default verify username to 'email'
@@ -55,6 +56,42 @@ module.exports = app => {
   }
   const localStrategy = new LocalStrategy(customFields, verifyCallback)
   passport.use(localStrategy)
+
+  // set FacebookStrategy
+  const customFieldsFacebook = {
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: process.env.FACEBOOK_CALLBACK,
+    profileFields: ['email', 'displayName'] // fields that ask Facebook to provide
+  }
+  const verifyCallbackFacebook = async (accessToken, refreshToken, profile, done) => {
+    try {
+      const { name, email } = profile._json
+      let user = await User.findOne({ where: { email: email } })
+
+      if (user === null) { // account not exist
+        // register a new account using Facebook email
+        const randomPassword = Math.random().toString(36).slice(-8) // gen 8 digits random number
+        const salt = await bcrypt.genSalt(10) // saltRounds = 10
+        const hash = await bcrypt.hash(randomPassword, salt)
+        const newUser = await User.create(
+          {
+            name,
+            email: email,
+            password: hash // use hash replace password
+          }
+        )
+        return done(null, newUser)
+      } else { // account exist, return user
+        user = user.toJSON()
+        return done(null, user)
+      }
+    } catch (error) {
+      return done(error)
+    }
+  }
+  const facebookStrategy = new FacebookStrategy(customFieldsFacebook, verifyCallbackFacebook)
+  passport.use(facebookStrategy)
 
   // set serialize, transform user into user.id
   passport.serializeUser((user, done) => {
