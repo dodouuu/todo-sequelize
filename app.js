@@ -2,13 +2,11 @@ const express = require('express')
 const session = require('express-session')
 const { engine } = require('express-handlebars')
 const methodOverride = require('method-override')
-const bcrypt = require('bcryptjs')
-// 引用 passport，放在文件上方
-const passport = require('passport')
-const db = require('./models')
-const Todo = db.Todo
-const User = db.User
+// Flash message package is about HINT for user
+const flash = require('connect-flash')
 
+// divide the routes into routes document
+const routes = require('./routes')
 const app = express()
 const PORT = 3000
 app.engine('hbs', engine({
@@ -17,89 +15,62 @@ app.engine('hbs', engine({
 }))
 app.set('view engine', 'hbs')
 
+app.use(express.static('public')) // setting static files
+
 app.use(session({
-  secret: 'ThisIsMySecret',
-  resave: false,
-  saveUninitialized: true
+  secret: 'ThisIsMySecret', // session use secret to verify string of session id
+  resave: false, // if resave = true, force session save in session store everytime
+  saveUninitialized: true // force Uninitialized session save in session store
 }))
 
-// 載入設定檔，要寫在 express-session 以後
+// app.use(session()) must before app.use(passport.session()) in config/passport.js
 const usePassport = require('./config/passport')
-// 呼叫 Passport 函式並傳入 app，這條要寫在路由之前
 usePassport(app)
+// usePassport(app) must before routes
 
 // set body-parser middleware
 app.use(express.urlencoded({ extended: true }))
 // set methodOverride middleware
 app.use(methodOverride('_method'))
 
-// 加入 middleware，驗證 reqest 登入狀態
-app.post('/users/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/users/login'
-}))
+app.use(flash()) // Flash message package is about HINT for user
 
-app.get('/', (req, res) => {
-  return Todo.findAll({
-    raw: true,
-    nest: true
-  })
-    .then((todos) => {
-      return res.render('index', { todos: todos })
-    })
-    .catch((error) => { return res.status(422).json(error) })
+// set local variables: res.locals for all templates in views
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.isAuthenticated()
+  // res.locals.isAuthenticated go to views/layouts/main.hbs
 
+  res.locals.localUser = req.user
+  // req.user come from passport.deserializeUser() in config/passport.js
+  // localUser go to views/layouts/main.hbs
+
+  res.locals.userAccount = req.flash('wrongAccont')
+  // wrongAccont come from config/passport.js
+  // userAccount go to views/login.hbs
+  res.locals.userPasswd = req.flash('wrongPasswd')
+  // wrongPasswd come from config/passport.js
+  // userPasswd go to views/login.hbs
+
+  res.locals.success_msg = req.flash('success_msg')
+  // success_msg come from routes/modules/users.js
+  // res.locals.success_msg go to views/partials/message.hbs
+
+  res.locals.warning_msg = req.flash('warning_msg')
+  // warning_msg come from middleware/auth.js
+  // res.locals.warning_msg go to views/partials/message.hbs
+
+  res.locals.login_error = req.flash('error')
+  // req.flash('error') come from config/passport.js
+  // login_error go to views/partials/message.hbs
+
+  next()
 })
 
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findByPk(id)
-    .then(todo => res.render('detail', { todo: todo.toJSON() }))
-    .catch(error => console.log(error))
-})
+// after all middlewares
+app.use(routes)
+// before error handler
 
-app.get('/users/login', (req, res) => {
-  res.render('login')
-})
-
-app.post('/users/login', (req, res) => {
-  res.send('login')
-})
-
-app.get('/users/register', (req, res) => {
-  res.render('register')
-})
-
-app.post('/users/register', (req, res) => {
-  const { name, email, password, confirmPassword } = req.body
-  User.findOne({ where: { email } }).then(user => {
-    if (user) {
-      console.log('User already exists')
-      return res.render('register', {
-        name,
-        email,
-        password,
-        confirmPassword
-      })
-    }
-    return bcrypt
-      .genSalt(10)
-      .then(salt => bcrypt.hash(password, salt))
-      .then(hash => User.create({
-        name,
-        email,
-        password: hash
-      }))
-      .then(() => res.redirect('/'))
-      .catch(err => console.log(err))
-  })
-
-})
-
-app.get('/users/logout', (req, res) => {
-  res.send('logout')
-})
-
+// start and listen on the Express server
 app.listen(PORT, () => {
   console.log(`App is running on http://localhost:${PORT}`)
 })
