@@ -30,11 +30,35 @@ router.post('/', async (req, res) => {
 })
 
 // go to views/detail.hbs
-router.get('/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findByPk(id)
-    .then(todo => res.render('detail', { todo: todo.toJSON() }))
-    .catch(error => console.log(error))
+router.get('/:id', async (req, res) => {
+  try {
+    const TodoId = req.params.id
+    let todo = await Todo.findByPk(TodoId)
+    todo = todo.toJSON()
+    return res.render('detail', { todo })
+  } catch (error) {
+    return res.status(422).json(error)
+  }
+})
+
+// go to edit.hbs of a todo
+router.get('/:id/edit', async (req, res) => {
+  try {
+    console.log('go to edit.hbs')
+    const UserId = req.user.id
+    const TodoId = req.params.id
+    let todo = await Todo.findOne({
+      where: {
+        id: TodoId,
+        UserId
+      }
+    })
+    todo = todo.toJSON()
+    // console.log('toJSON todo=', todo)
+    return res.render('edit', { todo })
+  } catch (error) {
+    return console.error(error)
+  }
 })
 
 module.exports = router

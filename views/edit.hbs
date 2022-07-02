@@ -1,0 +1,53 @@
+<div class="d-flex justify-content-center my-5">
+  <div class="row w-50">
+    <div class="col-3 d-flex align-items-center">
+      <div>*必填欄位</div>
+    </div>
+    <div class="col-9 d-flex justify-content-center">
+      <div class="btn-lg btn btn-outline-secondary text-secondary p-2">請修改你的 todo</div>
+    </div>
+  </div>
+</div>
+
+<form action="/todos/{{todo.id}}?_method=PUT" method="POST" class="was-validated">
+
+  {{!-- expense name --}}
+  <div class="d-flex justify-content-center my-5">
+    <div class="row w-50">
+
+      <div class="col-3 d-flex align-items-center">
+        <label for="name" class="m-1">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="ms-2">名稱* :</span>
+        </label>
+      </div>
+
+      <div class="col-9">
+        <input id="name" class="form-control" type="text" placeholder="todo name" name="name" value="{{todo.name}}"
+          required />
+
+        <div class="valid-feedback">
+          <span class="d-flex justify-content-center">Looks good!</span>
+        </div>
+        <div class="invalid-feedback">
+          <span class="d-flex justify-content-center">名稱必填</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {{!-- update btn for PUT /records/_id --}}
+  <div class="d-flex justify-content-center mb-5">
+    <div class="w-50 row d-flex flex-row-reverse">
+      <div class="col-9">
+        <button type="submit" class="form-control btn btn-info btn-lg">Save Update</button>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<script>
+
+</script>

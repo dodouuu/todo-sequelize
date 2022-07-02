@@ -71,6 +71,9 @@ app.use((req, res, next) => {
   // req.flash('error') come from config/passport.js
   // login_error go to views/partials/message.hbs
 
+  res.locals.errorFromHandler = req.flash('error_messages')
+  // req.flash('error_messages') come from middleware/error-handler.js
+  // errorFromHandler go to views/partials/message.hbs
   next()
 })
 

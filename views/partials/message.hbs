@@ -16,7 +16,7 @@
 </div>
 {{/if}}
 
-{{!-- error message from users.js --}}
+{{!-- error message from users.js for Register errors --}}
 {{#if errors}}
 {{#each errors}}
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -27,10 +27,19 @@
 {{/each}}
 {{/if}}
 
-{{!-- error message from passport.js --}}
+{{!-- error message from passport.js for Login error --}}
 {{#if login_error}}
-<div class="alert alert-primary alert-dismissible fade show" role="alert">
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
   {{ login_error }}
+
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+{{!-- error_messages from middleware/error-handler.js --}}
+{{#if errorFromHandler}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{ errorFromHandler }}
 
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>

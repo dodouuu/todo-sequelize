@@ -12,6 +12,8 @@ const users = require('./modules/users')
 
 // import middleware/auth.js to protect user's private data
 const { authenticator } = require('../middleware/auth')
+// import middleware/error-handler.js to handle error
+const { errorHandler } = require('../middleware/error-handler')
 
 // make request url begin with /users direct to routes/modules/users.js
 router.use('/users', users)
@@ -24,5 +26,7 @@ router.use('/todos', authenticator, todos)
 
 // make request url begin with / direct to routes/modules/home.js
 router.use('/', authenticator, home)
+
+router.use('/', errorHandler)
 
 module.exports = router
