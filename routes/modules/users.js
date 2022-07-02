@@ -39,30 +39,50 @@ router.get('/register', (req, res) => {
 })
 
 // press Register btn in views/register.hbs
-router.post('/register', (req, res) => {
-  const { name, email, password, confirmPassword } = req.body
-  User.findOne({ where: { email } }).then(user => {
-    if (user) {
-      console.log('User already exists')
-      return res.render('register', {
-        name,
-        email,
-        password,
-        confirmPassword
-      })
+router.post('/register', async (req, res) => {
+  try {
+    const body = { ...req.body }
+    const errors = []
+    if (!body.name) {
+      errors.push({ message: 'unfilled Name' })
     }
-    return bcrypt
-      .genSalt(10)
-      .then(salt => bcrypt.hash(password, salt))
-      .then(hash => User.create({
-        name,
-        email,
-        password: hash
-      }))
-      .then(() => res.redirect('/'))
-      .catch(err => console.log(err))
-  })
+    if (!body.email) {
+      errors.push({ message: 'unfilled Account' })
+    }
+    if (!body.password) {
+      errors.push({ message: 'unfilled Password' })
+    }
+    if (!body.confirmPassword) {
+      errors.push({ message: 'unfilled confirmPassword' })
+    }
+    if (body.password !== body.confirmPassword) {
+      errors.push({ message: 'Password、confirmPassword NOT match' })
+    }
+    if (errors.length) {
+      return res.render('register', { errors, body })
+    }
 
+    const todo = await User.findOne({
+      where: {
+        email: body.email
+      }
+    })
+    if (todo !== null) { // find a same account
+      errors.push({ message: 'the Account is already registered' })
+      return res.render('register', { errors, body }) // keep data in fields, dont clear
+    } else { // account not exist
+      const salt = await bcrypt.genSalt(10) // saltRounds = 10
+      const hash = await bcrypt.hash(body.password, salt)
+      await User.create({
+        name: body.name,
+        email: body.email,
+        password: hash
+      })
+      return res.redirect('/')
+    }
+  } catch (error) {
+    return res.status(422).json(error)
+  }
 })
 
 module.exports = router
