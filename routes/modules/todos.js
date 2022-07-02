@@ -47,15 +47,37 @@ router.get('/:id/edit', async (req, res) => {
     console.log('go to edit.hbs')
     const UserId = req.user.id
     const TodoId = req.params.id
+    const filter = { id: TodoId, UserId }
     let todo = await Todo.findOne({
-      where: {
-        id: TodoId,
-        UserId
-      }
+      where: filter
     })
     todo = todo.toJSON()
     // console.log('toJSON todo=', todo)
     return res.render('edit', { todo })
+  } catch (error) {
+    return console.error(error)
+  }
+})
+
+// Update a todo
+router.put('/:id', async (req, res) => {
+  try {
+    const UserId = req.user.id
+    const TodoId = req.params.id
+    const filter = { id: TodoId, UserId }
+    const { isDone, name } = req.body
+    // if checkbox clicked => isDone = 'on'
+    // if checkbox unclicked => isDone = undefined
+
+    await Todo.update(
+      {
+        isDone: isDone === 'on',
+        name
+      },
+      { where: filter }
+    )
+    return res.redirect('/')
+
   } catch (error) {
     return console.error(error)
   }

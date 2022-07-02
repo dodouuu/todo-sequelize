@@ -23,15 +23,23 @@
       </div>
 
       <div class="col-9">
-        <input id="name" class="form-control" type="text" placeholder="todo name" name="name" value="{{todo.name}}"
-          required />
+        <div class="input-group">
+          {{!-- checkbox --}}
+          <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" name="isDone" {{#if todo.isDone}} checked {{/if}}>
+          </div>
 
-        <div class="valid-feedback">
-          <span class="d-flex justify-content-center">Looks good!</span>
+          <input id="name" class="form-control" type="text" placeholder="todo name" name="name" value="{{todo.name}}"
+            required />
+
+          <div class="valid-feedback">
+            <span class="d-flex justify-content-center">Looks good!</span>
+          </div>
+          <div class="invalid-feedback">
+            <span class="d-flex justify-content-center">名稱必填</span>
+          </div>
         </div>
-        <div class="invalid-feedback">
-          <span class="d-flex justify-content-center">名稱必填</span>
-        </div>
+
       </div>
 
     </div>
