@@ -41,7 +41,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// go to edit.hbs of a todo
+// go to views/edit.hbs of a todo
 router.get('/:id/edit', async (req, res) => {
   try {
     console.log('go to edit.hbs')
