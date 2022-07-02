@@ -55,7 +55,7 @@ router.get('/:id/edit', async (req, res) => {
     // console.log('toJSON todo=', todo)
     return res.render('edit', { todo })
   } catch (error) {
-    return console.error(error)
+    return res.status(422).json(error)
   }
 })
 
@@ -79,7 +79,24 @@ router.put('/:id', async (req, res) => {
     return res.redirect('/')
 
   } catch (error) {
-    return console.error(error)
+    return res.status(422).json(error)
+  }
+})
+
+// Delete a todo
+router.delete('/:id', async (req, res) => {
+  try {
+    const UserId = req.user.id
+    const TodoId = req.params.id
+    const filter = { id: TodoId, UserId }
+    const todo = await Todo.findOne({
+      where: filter
+    })
+    await todo.destroy()
+    return res.redirect('/')
+
+  } catch (error) {
+    return res.status(422).json(error)
   }
 })
 
