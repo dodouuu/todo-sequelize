@@ -51,21 +51,21 @@ npm i
 4. 使用本機資料庫
 	1. 啟動 MySQL 本機服務
 	2. 設定環境變數：新創一個.env檔案，可以模仿.env.example：
-```
-FACEBOOK_APP_ID=SKIP
-FACEBOOK_APP_SECRET=SKIP
-FACEBOOK_CALLBACK=http://localhost:3000/auth/facebook/callback
-SESSION_SECRET=ThisIsMySecret
-PORT=3000
-```
+	```
+	FACEBOOK_APP_ID=SKIP
+	FACEBOOK_APP_SECRET=SKIP
+	FACEBOOK_CALLBACK=http://localhost:3000/auth/facebook/callback
+	SESSION_SECRET=ThisIsMySecret
+	PORT=3000
+	```
 	3. 啟動 MySQL Workbench 檢視資料庫
-```
-drop database if exists todo_sequelize;
-create database todo_sequelize;
-use todo_sequelize;
-select * from todos;
-select * from users;
-```
+	```
+	drop database if exists todo_sequelize;
+	create database todo_sequelize;
+	use todo_sequelize;
+	select * from todos;
+	select * from users;
+	```
 5. 創建初始種子資料
 ```
 npx sequelize db:seed:all
